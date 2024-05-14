@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
+	_ "embed"
 	_ "image/jpeg"
 	"log"
 	"net"
@@ -20,6 +21,17 @@ var (
 	sockChannel chan []byte
 
 	defaultImageLength = 50
+
+	//go:embed images/bmo-hello.jpg
+	bmoHello []byte
+	//go:embed images/bmo-joke.jpg
+	bmoJoke []byte
+	//go:embed images/bmo-shocked.jpg
+	bmoShocker []byte
+	//go:embed images/bmo-default.jpg
+	bmoDefault []byte
+	//go:embed images/bmo-greet.jpg
+	bmoGreet []byte
 )
 
 func listener() {
@@ -45,21 +57,21 @@ func listener() {
 	}
 }
 
-func translateSocketMessageToImage(msg string) string {
+func translateSocketMessageToImage(msg string) []byte {
 	switch {
 	case strings.HasPrefix(msg, "joke"):
-		return "bmo-joke.jpg"
+		return bmoJoke
 	case strings.HasPrefix(msg, "greet"):
-		return "bmo-hello.jpg"
+		return bmoGreet
 	case strings.HasPrefix(msg, "sob-reaction"):
-		return "bmo-shocked.jpg"
+		return bmoShocker
 	}
 
-	return "unknown"
+	return []byte{}
 }
 
 type Game struct {
-	showState  []string
+	showState  [][]byte
 	imagesLeft int
 	curImage   string
 }
@@ -74,22 +86,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	select {
 	case msg = <-sockChannel:
 		sockMsg = strings.TrimSuffix(strings.TrimSpace(string(msg[:])), "\n")
-		g.showState = append(g.showState, sockMsg)
 	default:
 		sockMsg = "unknown"
 	}
 
-	imageName := translateSocketMessageToImage(sockMsg)
-	if imageName != "unknown" {
+	imageBytes := translateSocketMessageToImage(sockMsg)
+	if len(imageBytes) != 0 {
 		if len(g.showState) == 0 {
 			g.imagesLeft = defaultImageLength
 		}
-		g.showState = append(g.showState, imageName)
+		g.showState = append(g.showState, imageBytes)
 	}
 
 	if g.imagesLeft > 0 {
 		g.imagesLeft--
-		ebImage, _, err := ebitenutil.NewImageFromFile(fmt.Sprintf("images/%s", g.showState[0]))
+		ebImage, _, err := ebitenutil.NewImageFromReader(bytes.NewReader(bmoHello))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -118,9 +129,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			}
 		}
 	}
-
-	//testVar++
-	//ebitenutil.DebugPrint(screen, fmt.Sprintf("Hello, World! x %d", testVar))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
