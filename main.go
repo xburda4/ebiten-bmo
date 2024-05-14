@@ -17,8 +17,7 @@ import (
 
 var (
 	socketConnection net.Listener
-	//testVar          int
-	sockChannel chan []byte
+	sockChannel      chan []byte
 
 	defaultImageLength = 50
 
@@ -51,7 +50,6 @@ func listener() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			//fmt.Println(strings.TrimSpace(string(buf[:])))
 			sockChannel <- buf
 		}(conn)
 	}
@@ -113,7 +111,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		var err error
 
 		if len(g.showState) == 0 {
-			ebImage, _, err = ebitenutil.NewImageFromFile("images/bmo-default.jpg")
+			ebImage, _, err = ebitenutil.NewImageFromReader(bytes.NewReader(bmoDefault))
 			if err != nil {
 				log.Fatal(err)
 			}
