@@ -60,7 +60,7 @@ func translateSocketMessageToImage(msg string) []byte {
 	case strings.HasPrefix(msg, "joke"):
 		return bmoJoke
 	case strings.HasPrefix(msg, "greet"):
-		return bmoGreet
+		return bmoHello
 	case strings.HasPrefix(msg, "sob-reaction"):
 		return bmoShocker
 	}
@@ -98,7 +98,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	if g.imagesLeft > 0 {
 		g.imagesLeft--
-		ebImage, _, err := ebitenutil.NewImageFromReader(bytes.NewReader(bmoHello))
+		ebImage, _, err := ebitenutil.NewImageFromReader(bytes.NewReader(g.showState[0]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -152,8 +152,11 @@ func main() {
 	go listener()
 
 	ebiten.SetFullscreen(false)
-	ebiten.SetWindowTitle("Hello, World!")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	ebiten.SetWindowSize(480, 640)
+	ebiten.SetWindowTitle("I'm Johny!")
+	if err := ebiten.RunGame(&Game{
+		showState: make([][]byte, 0),
+	}); err != nil {
 		log.Fatal(err)
 	}
 }
