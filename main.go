@@ -31,6 +31,10 @@ var (
 	bmoDefault []byte
 	//go:embed images/bmo-greet.jpg
 	bmoGreet []byte
+	//go:embed images/bmo-heart.jpg
+	bmoHeart []byte
+	//go:embed images/bmo-bububaba.jpg
+	bmoBubuBaba []byte
 )
 
 func listener() {
@@ -63,6 +67,10 @@ func translateSocketMessageToImage(msg string) []byte {
 		return bmoHello
 	case strings.HasPrefix(msg, "sob-reaction"):
 		return bmoShocker
+	case strings.HasPrefix(msg, "pretty-well-reaction"):
+		return bmoHeart
+	case strings.HasPrefix(msg, "message"):
+		return bmoBubuBaba
 	}
 
 	return []byte{}

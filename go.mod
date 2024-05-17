@@ -2,7 +2,10 @@ module bmo
 
 go 1.22.2
 
-require github.com/hajimehoshi/ebiten/v2 v2.7.3
+require (
+	github.com/hajimehoshi/ebiten/v2 v2.7.3
+	google.golang.org/protobuf v1.31.0
+)
 
 require (
 	github.com/ebitengine/gomobile v0.0.0-20240329170434-1771503ff0a8 // indirect
