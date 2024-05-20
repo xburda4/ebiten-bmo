@@ -3,6 +3,7 @@ name: Vulnerability scan
 on:
   schedule:
     - cron: "*/2 * * * *" # Run scan on Monday 04:00 UTC
+  workflow_dispatch:
   release:
     types: [ published ]
 
